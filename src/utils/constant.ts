@@ -18,7 +18,7 @@ export const educationData: I_Education[] = [
     course_title: "Master of Computer Applications",
     ending_date: "Expected July 2026",
     institute_name: "Sandip Institute of Technology and Research Centre",
-    // cgpa: 8.5,
+    cgpa: 7.28,
     description: "",
   },
   {

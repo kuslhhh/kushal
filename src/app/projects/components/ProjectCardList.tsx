@@ -49,4 +49,29 @@ const data: Project[] = [
     link: "https://dochulb.vercel.app/",
     source: "https://github.com/kuslhhh/dochub",
   },
+  {
+    logo: "/urbanalysis.png",
+    title: "Urbanalysis",
+    description: "Pollution trends in pune",
+    techStack: ["Jupitor Notebook","Python", "Pandas", "Seaborn", "matplotlib"],
+    // link: "https://",
+    source: "https://github.com/kuslhhh/urbanalysis",
+  },
+  {
+    logo: "/npm.png",
+    title: "KSH-CLI",
+    description: "KSH CLI is a command-line tool designed for Windows users who want to run bash-like commands directly in PowerShell.",
+    techStack: ["JavaScript"],
+    link: "https://www.npmjs.com/package/ksh-bash",
+    source: "https://github.com/kuslhhh/KSH-CLI",
+  },
+
+  // {
+  //   logo: "/.png",
+  //   title: "",
+  //   description: "",
+  //   techStack: ["","", "", ""],
+  //   link: "https://",
+  //   source: "https://",
+  // },
 ];
