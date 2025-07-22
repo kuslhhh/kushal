@@ -52,7 +52,7 @@ const data: Project[] = [
   {
     logo: "/urbanalysis.png",
     title: "Urbanalysis",
-    description: "Pollution trends in pune",
+    description: "Pollution trends in pune. A beginner-friendly exploratory data analysis (EDA) on air quality and pollution data collected from Pune, India.",
     techStack: ["Jupitor Notebook","Python", "Pandas", "Seaborn", "matplotlib"],
     // link: "https://",
     source: "https://github.com/kuslhhh/urbanalysis",
