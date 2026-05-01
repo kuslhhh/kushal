@@ -1,17 +1,25 @@
 import { Blog } from '@/types/project'
 import BlogCard from './BlogCard'
+import { prisma } from '@/lib/prisma'
 
-async function getBlogs() {
+async function getBlogs(): Promise<Blog[]> {
     try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/blogs`, {
-            cache: 'no-store'
+        const blogs = await prisma.blog.findMany({
+            orderBy: { createdAt: 'desc' },
+            select: {
+                id: true,
+                title: true,
+                content: true,
+                createdAt: true,
+                author: true,
+                image_public_id: true,
+            },
         });
-        const data = await response.json();
-
-        if (data.success) {
-            return data.message;
-        }
-        return [];
+        // Convert Date to string for the client component
+        return blogs.map((b) => ({
+            ...b,
+            createdAt: b.createdAt.toISOString(),
+        }));
     } catch (error) {
         console.error(`Error while fetching the blogs: ${error}`);
         return [];
@@ -20,6 +28,14 @@ async function getBlogs() {
 
 async function BlogList() {
     const blogs = await getBlogs();
+
+    if (blogs.length === 0) {
+        return (
+            <div className='w-full flex justify-center mt-10'>
+                <p className='text-gray-500'>No blogs yet. Check back soon!</p>
+            </div>
+        );
+    }
 
     return (
         <div className='w-full px-64 max-[1025px]:px-0 max-[1285px]:px-0 max-sm:px-2 flex flex-col gap-6 items-center mt-4 pb-8 max-sm:overflow-hidden'>
@@ -30,6 +46,7 @@ async function BlogList() {
                     createdAt={blog.createdAt}
                     content={blog.content}
                     id={blog.id}
+                    author={blog.author}
                 />
             ))}
         </div>

@@ -11,6 +11,8 @@ export async function getAllBlogs() {
         title: true,
         content: true,
         createdAt: true,
+        author: true,
+        image_public_id: true,
       },
     });
 

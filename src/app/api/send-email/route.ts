@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
           success: false,
           message: `Something went wrong while sending email : ${error}`,
         },
-        { status: 501 }
+        { status: 500 }
       );
     }
 
@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     return NextResponse.json(
       { success: false, message: `Server error occurred : ${error}` },
-      { status: 501 }
+      { status: 500 }
     );
   }
 }

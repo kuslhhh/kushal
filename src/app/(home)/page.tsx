@@ -2,7 +2,7 @@
 import Avatar from "./components/Avatar";
 import ProjectCardList from "../projects/components/ProjectCardList";
 import Skills from "@/components/Skills";
-// import Experience from "@/components/Experience";
+import Experience from "@/components/Experience";
 import Education from "@/components/Education";
 import { RainbowButton } from "@/components/ui/rainbow-button";
 import { Link as ScrollLink } from "react-scroll";
@@ -91,10 +91,9 @@ export default function Home() {
       <div className="w-full flex justify-center mt-4">
         <Skills />
       </div>
-{/* 
       <div className="w-full flex justify-center mt-4">
         <Experience />
-      </div> */}
+      </div>
 
       <div className="w-full flex justify-center mt-4">
         <Education />

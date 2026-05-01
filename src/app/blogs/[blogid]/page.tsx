@@ -1,36 +1,59 @@
-// app/blogs/page.tsx
-import { getAllBlogs } from "../../../lib/getBlog";
+import { prisma } from "@/lib/prisma";
+import { notFound } from "next/navigation";
+import { formatDate } from "@/utils/formatdate";
+import { calculateReadingTime } from "@/utils/blogReadingTime";
+import { bricolage_grotesque } from "@/utils/fonts";
+import BlogPage from "./components/BlogPage";
 
-export const dynamic = "force-dynamic"; // This ensures it's always run server-side
+export const dynamic = "force-dynamic";
 
-// eslint-disable-next-line @next/next/no-async-client-component
-export default async function BlogsPage() {
-  const blogs = await getAllBlogs();
+interface Props {
+  params: { blogid: string };
+}
+
+export default async function BlogDetailPage({ params }: Props) {
+  const blog = await prisma.blog.findUnique({
+    where: { id: params.blogid },
+  });
+
+  if (!blog) {
+    notFound();
+  }
+
+  const readingTime = calculateReadingTime(blog.content);
 
   return (
-    <main className="p-6 max-w-3xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6">All Blogs</h1>
+    <main className="w-full mt-32 flex flex-col items-center pb-16">
+      <div className="px-80 max-[1285px]:px-60 max-lg:px-20 max-sm:px-4 w-full">
+        {/* Title */}
+        <h1
+          className={`text-4xl max-sm:text-2xl font-extrabold dark:text-white text-black ${bricolage_grotesque}`}
+        >
+          {blog.title}
+        </h1>
 
-      {blogs.length === 0 ? (
-        <p className="text-gray-500">No blogs found.</p>
-      ) : (
-        <div className="space-y-6">
-          {blogs.map((blog) => (
-            <div
-              key={blog.id}
-              className="border border-gray-300 dark:border-gray-700 rounded-xl p-4 shadow-sm"
-            >
-              <h2 className="text-2xl font-semibold">{blog.title}</h2>
-              <p className="mt-2 text-gray-700 dark:text-gray-300">
-                {blog.content}
-              </p>
-              <p className="mt-1 text-sm text-gray-500">
-                {new Date(blog.createdAt).toLocaleDateString()}
-              </p>
-            </div>
-          ))}
+        {/* Meta */}
+        <div className="mt-4 flex items-center gap-3 text-sm text-gray-500 dark:text-gray-400">
+          <span className="font-semibold">{blog.author}</span>
+          <span>·</span>
+          <span>{formatDate(blog.createdAt.toISOString())}</span>
+          <span>·</span>
+          <span>{readingTime}</span>
         </div>
-      )}
+
+        {/* Cover image */}
+        {blog.image_public_id && (
+          <div className="mt-8 w-full flex justify-center">
+            <BlogPage public_id={blog.image_public_id} />
+          </div>
+        )}
+
+        {/* Content */}
+        <div
+          className={`prose dark:prose-invert max-w-none mt-10 ${bricolage_grotesque}`}
+          dangerouslySetInnerHTML={{ __html: blog.content }}
+        />
+      </div>
     </main>
   );
 }

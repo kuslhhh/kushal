@@ -15,7 +15,7 @@ type Blog = {
     createdAt: string
 }
 
-const BlogCard = ({ title, createdAt, content, id }: Blog) => {
+const BlogCard = ({ title, createdAt, content, id, author }: Blog) => {
     const readingTime = calculateReadingTime(content as string);
 
     return (
@@ -25,6 +25,7 @@ const BlogCard = ({ title, createdAt, content, id }: Blog) => {
                     <h2 className='text-[26px] max-sm:text-base font-extrabold dark:text-white text-black break-words'>{title}</h2>
                     <div className="line-clamp-2 max-sm:w-[85vw] dark:text-[#dcdcdc] text-[#6B6B6B] max-sm:mt-2 text-[15px] !mt-[2px]" dangerouslySetInnerHTML={{ __html: content as TrustedHTML }} />
                     <div className="text-xs space-x-4 !mt-4">
+                        {author && <span className='dark:text-[#dcdcdc] text-[#6B6B6B] font-semibold'>{author}</span>}
                         <span className='dark:text-[#dcdcdc] text-[#6B6B6B] font-semibold'>{formatDate(createdAt)}</span>
                         <span className='dark:text-[#dcdcdc] text-[#6B6B6B] font-semibold'>{readingTime}</span>
                     </div>

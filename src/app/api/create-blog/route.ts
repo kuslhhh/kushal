@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { v2 as cloudinary } from 'cloudinary';
 import { prisma } from '@/lib/prisma'
 import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 cloudinary.config({
     cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
@@ -15,7 +16,7 @@ interface CloudinaryUploadResult {
 }
 
 export async function POST(req: NextRequest) {
-    const session = await getServerSession();
+    const session = await getServerSession(authOptions);
 
     if (!session) {
         return NextResponse.json(
@@ -32,21 +33,21 @@ export async function POST(req: NextRequest) {
 
         if (!file) {
             return NextResponse.json(
-                { success: false, error: "File not found!" },
+                { success: false, message: "File not found!" },
                 { status: 400 }
             )
         }
 
         if (!title) {
             return NextResponse.json(
-                { success: false, error: "Title not found!" },
+                { success: false, message: "Title not found!" },
                 { status: 400 }
             )
         }
 
         if (!content) {
             return NextResponse.json(
-                { success: false, error: "Content not found!" },
+                { success: false, message: "Content not found!" },
                 { status: 400 }
             )
         }
@@ -86,7 +87,7 @@ export async function POST(req: NextRequest) {
 
     } catch (error) {
         return NextResponse.json(
-            { success: false, error: `Server Error: ${error}` },
+            { success: false, message: `Server Error: ${error}` },
             { status: 500 }
         );
     }
