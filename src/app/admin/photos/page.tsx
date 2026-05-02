@@ -2,8 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { bricolage_grotesque } from "@/utils/fonts";
 import { formatDate } from "@/utils/formatdate";
 import PhotoUploadForm from "./components/PhotoUploadForm";
-import DeletePhotoButton from "./components/DeletePhotoButton";
-import Image from "next/image";
+import PhotoRow from "./components/PhotoRow";
 
 export const dynamic = "force-dynamic";
 
@@ -17,49 +16,33 @@ export default async function AdminPhotosPage() {
             <div className="mb-8">
                 <h1 className="text-3xl font-bold dark:text-white text-black mb-1">Photos</h1>
                 <p className="text-sm text-gray-500">
-                    {photos.length} photo{photos.length !== 1 ? "s" : ""} · Stored on Cloudinary
+                    {photos.length} photo{photos.length !== 1 ? "s" : ""}
                 </p>
             </div>
 
             {/* Upload form */}
             <div className="border dark:border-white/10 border-black/10 rounded-xl p-6 mb-10 max-w-lg">
-                <h2 className="font-semibold dark:text-white text-black mb-4">Upload Photo</h2>
+                <h2 className="font-semibold dark:text-white text-black mb-4">Upload Photos</h2>
                 <PhotoUploadForm />
             </div>
 
-            {/* Grid */}
+            {/* List */}
             {photos.length > 0 && (
                 <>
-                    <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
+                    <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">
                         All Photos
                     </h2>
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                    <div className="flex flex-col divide-y divide-black/5 dark:divide-white/5 border dark:border-white/10 border-black/10 rounded-xl overflow-hidden max-w-3xl">
                         {photos.map((photo) => (
-                            <div
+                            <PhotoRow
                                 key={photo.id}
-                                className="group relative rounded-xl overflow-hidden"
-                            >
-                                <Image
-                                    src={photo.url}
-                                    alt={photo.title ?? "Photo"}
-                                    width={photo.width}
-                                    height={photo.height}
-                                    className="w-full h-auto object-cover"
-                                    sizes="(max-width: 768px) 50vw, 25vw"
-                                />
-                                {/* Overlay on hover */}
-                                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-3">
-                                    <p className="text-white text-xs font-medium line-clamp-2">
-                                        {photo.title ?? "Untitled"}
-                                    </p>
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-gray-300 text-[10px]">
-                                            {formatDate(photo.createdAt.toISOString())}
-                                        </span>
-                                        <DeletePhotoButton photoId={photo.id} />
-                                    </div>
-                                </div>
-                            </div>
+                                id={photo.id}
+                                url={photo.url}
+                                title={photo.title}
+                                createdAt={formatDate(photo.createdAt.toISOString())}
+                                width={photo.width}
+                                height={photo.height}
+                            />
                         ))}
                     </div>
                 </>
