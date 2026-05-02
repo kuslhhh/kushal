@@ -16,7 +16,7 @@ export default async function AdminDashboard() {
             <p className="text-sm text-gray-500 mb-8">Welcome back. Here&apos;s what&apos;s going on.</p>
 
             {/* Stats */}
-            <div className="grid grid-cols-3 gap-4 max-w-xl mb-10">
+            <div className="grid grid-cols-3 max-sm:grid-cols-1 gap-3 max-w-xl mb-10">
                 <div className="border dark:border-white/10 border-black/10 rounded-xl p-5">
                     <div className="flex items-center gap-2 text-gray-500 text-sm mb-2">
                         <FileTextIcon className="w-4 h-4" /> Blogs

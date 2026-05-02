@@ -21,7 +21,7 @@ export default async function AdminPhotosPage() {
             </div>
 
             {/* Upload form */}
-            <div className="border dark:border-white/10 border-black/10 rounded-xl p-6 mb-10 max-w-lg">
+            <div className="border dark:border-white/10 border-black/10 rounded-xl p-5 mb-10 max-w-lg w-full">
                 <h2 className="font-semibold dark:text-white text-black mb-4">Upload Photos</h2>
                 <PhotoUploadForm />
             </div>
@@ -32,7 +32,7 @@ export default async function AdminPhotosPage() {
                     <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">
                         All Photos
                     </h2>
-                    <div className="flex flex-col divide-y divide-black/5 dark:divide-white/5 border dark:border-white/10 border-black/10 rounded-xl overflow-hidden max-w-3xl">
+                    <div className="flex flex-col divide-y divide-black/5 dark:divide-white/5 border dark:border-white/10 border-black/10 rounded-xl overflow-hidden max-w-3xl w-full">
                         {photos.map((photo) => (
                             <PhotoRow
                                 key={photo.id}

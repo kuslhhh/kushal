@@ -20,9 +20,9 @@ export default async function AdminBlogsPage() {
 
     return (
         <div className={`${bricolage_grotesque}`}>
-            <div className="flex items-center justify-between mb-8">
+            <div className="flex items-start max-sm:flex-col max-sm:gap-4 justify-between mb-8">
                 <div>
-                    <h1 className="text-3xl font-bold dark:text-white text-black mb-1">
+                    <h1 className="text-3xl max-sm:text-2xl font-bold dark:text-white text-black mb-1">
                         Blogs
                     </h1>
                     <p className="text-sm text-gray-500">
@@ -31,7 +31,7 @@ export default async function AdminBlogsPage() {
                 </div>
                 <Link
                     href="/admin/blogs/new"
-                    className="flex items-center gap-2 bg-black text-white dark:bg-white dark:text-black px-4 py-2.5 rounded-lg text-sm font-semibold hover:opacity-80 transition-opacity"
+                    className="flex items-center gap-2 bg-black text-white dark:bg-white dark:text-black px-4 py-2.5 rounded-lg text-sm font-semibold hover:opacity-80 transition-opacity shrink-0"
                 >
                     <PlusIcon className="w-4 h-4" />
                     New Post
@@ -50,11 +50,11 @@ export default async function AdminBlogsPage() {
                     {blogs.map((blog) => (
                         <div
                             key={blog.id}
-                            className="flex items-center justify-between border dark:border-white/10 border-black/10 rounded-xl px-5 py-4 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
+                            className="flex items-center justify-between border dark:border-white/10 border-black/10 rounded-xl px-4 py-3 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors gap-3"
                         >
-                            <div className="flex-1 min-w-0 pr-4">
+                            <div className="flex-1 min-w-0">
                                 <Link href={`/blogs/${blog.id}`} target="_blank">
-                                    <h2 className="font-semibold dark:text-white text-black truncate hover:underline">
+                                    <h2 className="font-semibold dark:text-white text-black truncate hover:underline text-sm">
                                         {blog.title}
                                     </h2>
                                 </Link>

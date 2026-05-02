@@ -6,17 +6,17 @@ export default withAuth(
         const token = req.nextauth.token;
         const isAdminRoute = req.nextUrl.pathname.startsWith("/admin");
 
-        // Extra check: even with a valid session, only the admin email gets through
         if (isAdminRoute && token?.email !== process.env.ADMIN_EMAIL) {
             return NextResponse.redirect(new URL("/login", req.url));
         }
 
-        return NextResponse.next();
+        // Pass the pathname as a header so server components can read it
+        const res = NextResponse.next();
+        res.headers.set("x-pathname", req.nextUrl.pathname);
+        return res;
     },
     {
         callbacks: {
-            // Only run middleware logic when there's a token (logged in)
-            // If no token, withAuth auto-redirects to /login
             authorized: ({ token }) => !!token,
         },
     }

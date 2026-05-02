@@ -10,15 +10,15 @@ export default async function AdminLayout({
 }) {
     const session = await getServerSession(authOptions);
 
-    // Server-side guard — belt-and-suspenders alongside middleware
     if (!session || session.user?.email !== process.env.ADMIN_EMAIL) {
         redirect("/login");
     }
 
     return (
-        <div className="min-h-screen flex dark:bg-black bg-white">
+        <div className="min-h-screen dark:bg-black bg-white">
             <AdminSidebar />
-            <main className="flex-1 ml-56 p-8 mt-4">
+            {/* Desktop: offset by sidebar width. Mobile: no offset, sidebar overlays */}
+            <main className="md:ml-56 p-4 md:p-8 pt-16 md:pt-8">
                 {children}
             </main>
         </div>

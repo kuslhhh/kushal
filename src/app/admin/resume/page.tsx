@@ -24,7 +24,7 @@ export default async function AdminResumePage() {
             </div>
 
             {/* Upload form */}
-            <div className="border dark:border-white/10 border-black/10 rounded-xl p-6 mb-8 max-w-lg">
+            <div className="border dark:border-white/10 border-black/10 rounded-xl p-5 mb-8 max-w-lg w-full">
                 <h2 className="font-semibold dark:text-white text-black mb-4">
                     Upload New Resume
                 </h2>
@@ -39,19 +39,19 @@ export default async function AdminResumePage() {
             {resumes.length === 0 ? (
                 <p className="text-gray-500 text-sm">No resumes uploaded yet.</p>
             ) : (
-                <div className="flex flex-col gap-2 max-w-2xl">
+                <div className="flex flex-col gap-2 max-w-2xl w-full">
                     {resumes.map((resume) => (
                         <div
                             key={resume.id}
-                            className="flex items-center justify-between border dark:border-white/10 border-black/10 rounded-xl px-5 py-4"
+                            className="flex items-start max-sm:flex-col max-sm:gap-3 justify-between border dark:border-white/10 border-black/10 rounded-xl px-4 py-3"
                         >
-                            <div className="flex-1 min-w-0 pr-4">
-                                <div className="flex items-center gap-2">
+                            <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2 flex-wrap">
                                     <span className="font-semibold dark:text-white text-black text-sm truncate">
                                         {resume.label}
                                     </span>
                                     {resume.isActive && (
-                                        <span className="text-[10px] font-bold bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-400 px-2 py-0.5 rounded-full">
+                                        <span className="text-[10px] font-bold bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-400 px-2 py-0.5 rounded-full shrink-0">
                                             ACTIVE
                                         </span>
                                     )}
@@ -60,7 +60,7 @@ export default async function AdminResumePage() {
                                     {formatDate(resume.createdAt.toISOString())}
                                 </p>
                             </div>
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 shrink-0">
                                 <a
                                     href={resume.fileUrl}
                                     target="_blank"
