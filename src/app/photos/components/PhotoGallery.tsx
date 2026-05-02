@@ -24,14 +24,14 @@ const LIKED_KEY = "liked_photos"; // localStorage key
 function getLikedSet(): Set<string> {
     if (typeof window === "undefined") return new Set();
     try {
-        return new Set(JSON.parse(localStorage.getItem(LIKED_KEY) ?? "[]"));
+        return new Set<string>(JSON.parse(localStorage.getItem(LIKED_KEY) ?? "[]") as string[]);
     } catch {
-        return new Set();
+        return new Set<string>();
     }
 }
 
 function saveLikedSet(set: Set<string>) {
-    localStorage.setItem(LIKED_KEY, JSON.stringify([...set]));
+    localStorage.setItem(LIKED_KEY, JSON.stringify(Array.from(set)));
 }
 
 // Per-photo like state managed independently
