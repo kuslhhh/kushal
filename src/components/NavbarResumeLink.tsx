@@ -3,7 +3,7 @@ import NavbarResumeLinkClient from "./NavbarResumeLinkClient";
 
 // Server component — fetches active resume URL at request time
 export default async function NavbarResumeLink() {
-    let href = "/resume"; // always point to the viewer page
+    const href = "/resume"; // always point to the viewer page
 
     try {
         const activeResume = await prisma.resume.findFirst({
