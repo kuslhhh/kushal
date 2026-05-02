@@ -86,8 +86,12 @@ export async function POST(req: NextRequest) {
         );
 
     } catch (error) {
+        const message = error instanceof Error
+            ? error.message
+            : JSON.stringify(error);
+        console.error("Blog create error:", error);
         return NextResponse.json(
-            { success: false, message: `Server Error: ${error}` },
+            { success: false, message: `Server Error: ${message}` },
             { status: 500 }
         );
     }

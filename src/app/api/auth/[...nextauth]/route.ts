@@ -33,6 +33,11 @@ export const authOptions: AuthOptions = {
                         throw new Error('Incorrect Password!')
                     }
 
+                    // Only the admin email is allowed to authenticate
+                    if (user.email !== process.env.ADMIN_EMAIL) {
+                        throw new Error('Access denied.')
+                    }
+
                     return user;
                 } catch (error) {
                     throw new Error((error as Error).message);

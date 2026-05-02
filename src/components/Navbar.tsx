@@ -17,7 +17,7 @@ import { FaXTwitter } from "react-icons/fa6";
 import { IoPerson } from "react-icons/io5";
 import { useDarkMode } from "@/hooks/useDarkMode";
 
-const Navbar = () => {
+const Navbar = ({ resumeSlot }: { resumeSlot?: React.ReactNode }) => {
   const { isDarkMode, toggleDarkMode } = useDarkMode();
   const pathname = usePathname();
 
@@ -87,17 +87,19 @@ const Navbar = () => {
             className="bg-black dark:bg-gray-400"
           />
 
-         <Link
-            href="https://drive.google.com/file/d/1iudu-xrxoqlJNXnaUNcop4_dZvFMYQhc/view?usp=sharing"
-            target="_blank"
-            underline="none"
-          >
-            <Tooltip content="Resume">
-              <div className="hover:px-3 max-sm:hover:px-2 py-2.5 dark:hover:bg-[#262626] hover:bg-[#F4F4F5] rounded-full transition-all duration-300">
-                <FileIcon className="w-[19px] h-[19px] max-sm:h-[15px] max-sm:w-[15px] text-black dark:text-white" />
-              </div>
-            </Tooltip>
-          </Link>
+         {resumeSlot ?? (
+            <Link
+              href="https://drive.google.com/file/d/1iudu-xrxoqlJNXnaUNcop4_dZvFMYQhc/view?usp=sharing"
+              target="_blank"
+              underline="none"
+            >
+              <Tooltip content="Resume">
+                <div className="hover:px-3 max-sm:hover:px-2 py-2.5 dark:hover:bg-[#262626] hover:bg-[#F4F4F5] rounded-full transition-all duration-300">
+                  <FileIcon className="w-[19px] h-[19px] max-sm:h-[15px] max-sm:w-[15px] text-black dark:text-white" />
+                </div>
+              </Tooltip>
+            </Link>
+          )}
    
           <Link href="https://github.com/kuslhhh" target="_blank">
             <Tooltip content="Github">
