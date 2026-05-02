@@ -14,15 +14,16 @@ export const GithubGraph = ({
 }: GithubGraphProps) => {
   const [contribution, setContribution] = useState<Activity[]>([]);
   const [loading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchData = useCallback(async () => {
     try {
       const contributions = await fetchContributionData();
       setContribution(contributions || []);
-    } catch (error) {
+    } catch (err) {
       const errorMessage =
-        error instanceof Error ? error.message : "Unknown error";
-      throw new Error(`Error fetching contribution data: ${errorMessage}`);
+        err instanceof Error ? err.message : "Unknown error";
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -40,6 +41,8 @@ export const GithubGraph = ({
     <>
       {loading ? (
         <p>Loading...</p>
+      ) : error ? (
+        <p>Failed to load contributions.</p>
       ) : contribution.length > 0 ? (
         <ActivityCalendar
           data={contribution}

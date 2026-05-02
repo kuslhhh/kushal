@@ -3,53 +3,21 @@
 export async function GET() {
   const username = "kuslhhh";
 
-  const response = await fetch("https://api.github.com/graphql", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      query: `
-        query {
-          user(login: "${username}") {
-            contributionsCollection {
-              contributionCalendar {
-                weeks {
-                  contributionDays {
-                    date
-                    contributionCount
-                  }
-                }
-              }
-            }
-          }
-        }
-      `,
-    }),
-  });
+  const response = await fetch(
+    `https://github-contributions-api.jogruber.de/v4/${username}?y=last`,
+    { cache: "no-store" }
+  );
 
   const json = await response.json();
 
   if (!response.ok) {
     return new Response(
-      JSON.stringify({ error: "GitHub API failed", details: json }),
-      {
-        status: 500,
-      }
+      JSON.stringify({ error: "GitHub contributions API failed", details: json }),
+      { status: 500 }
     );
   }
 
-  const flat = json.data.user.contributionsCollection.contributionCalendar.weeks
-    .flatMap(
-      (week: {
-        contributionDays: { date: string; contributionCount: number }[];
-      }) => week.contributionDays
-    )
-    .map((day: { date: string; contributionCount: number }) => ({
-      date: day.date,
-      count: day.contributionCount,
-    }));
-
-  return Response.json({ data: flat });
+  // API returns { total: { lastYear: number }, contributions: Activity[] }
+  // Each contribution already has { date, count, level } — exactly what react-activity-calendar needs
+  return Response.json({ data: json.contributions });
 }

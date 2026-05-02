@@ -11,6 +11,7 @@ import {
   LinkedInLogoIcon,
   CodeIcon,
   HomeIcon,
+  CameraIcon,
 } from "@radix-ui/react-icons";
 import { usePathname } from "next/navigation";
 import { FaXTwitter } from "react-icons/fa6";
@@ -73,6 +74,20 @@ const Navbar = ({ resumeSlot }: { resumeSlot?: React.ReactNode }) => {
                 <IoPerson
                   className={`w-[18px] h-[18px] max-sm:w-[15px] max-sm:h-[15px] text-black dark:text-white ${
                     pathname == "/about"
+                      ? "dark:!text-[#FFC83D] !text-[#cc9e2b]"
+                      : ""
+                  }`}
+                />
+              </div>
+            </Tooltip>
+          </Link>
+
+          <Link href="/photos" underline="none">
+            <Tooltip content="Photography">
+              <div className="hover:px-3 max-sm:hover:px-2 py-2.5 dark:hover:bg-[#262626] hover:bg-[#F4F4F5] rounded-full transition-all duration-300">
+                <CameraIcon
+                  className={`w-[18px] h-[18px] max-sm:w-[15px] max-sm:h-[15px] text-black dark:text-white ${
+                    pathname === "/photos"
                       ? "dark:!text-[#FFC83D] !text-[#cc9e2b]"
                       : ""
                   }`}

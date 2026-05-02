@@ -9,11 +9,13 @@ import {
     FileIcon,
     DashboardIcon,
     ExitIcon,
+    ImageIcon,
 } from "@radix-ui/react-icons";
 
 const navItems = [
     { href: "/admin", label: "Dashboard", icon: DashboardIcon },
     { href: "/admin/blogs", label: "Blogs", icon: FileTextIcon },
+    { href: "/admin/photos", label: "Photos", icon: ImageIcon },
     { href: "/admin/resume", label: "Resume", icon: FileIcon },
 ];
 

@@ -33,3 +33,13 @@ model Resume {
   isActive  Boolean  @default(false)
   createdAt DateTime @default(now())
 }
+
+model Photo {
+  id        String   @id @default(cuid())
+  title     String?
+  public_id String
+  url       String
+  width     Int
+  height    Int
+  createdAt DateTime @default(now())
+}

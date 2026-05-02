@@ -11,11 +11,10 @@ import {
 } from "@radix-ui/react-icons";
 
 interface Props {
-    fileUrl: string | null;   // already converted to /preview embed URL
-    downloadUrl: string | null; // original /view URL for the download button
+    fileUrl: string | null;
+    downloadUrl: string | null;
     label: string | null;
     updatedAt: string | null;
-    siteHost: string;
 }
 
 function toFilename(label: string | null): string {
@@ -23,7 +22,7 @@ function toFilename(label: string | null): string {
     return label.replace(/[^a-zA-Z0-9_\-. ]/g, "").trim().replace(/\s+/g, "_") + ".pdf";
 }
 
-export default function ResumeViewer({ fileUrl, downloadUrl, label, updatedAt, siteHost }: Props) {
+export default function ResumeViewer({ fileUrl, downloadUrl, label, updatedAt }: Props) {
     const [isFullscreen, setIsFullscreen] = useState(false);
     const filename = toFilename(label);
 
@@ -40,19 +39,23 @@ export default function ResumeViewer({ fileUrl, downloadUrl, label, updatedAt, s
     };
 
     return (
-        <div className={`min-h-screen bg-[#0d0d0d] flex flex-col ${bricolage_grotesque}`}>
+        <div className={`min-h-screen bg-white dark:bg-black flex flex-col ${bricolage_grotesque}`}>
 
             {/* ── Heading ── */}
             <div className="w-full max-w-4xl mx-auto px-4 pt-10 pb-6 flex flex-col items-center gap-1">
-                <h1 className="text-4xl font-bold text-white tracking-tight">Resume</h1>
-                {label && <p className="text-gray-400 text-sm mt-1">{label}</p>}
+                <h1 className="text-4xl font-bold text-black dark:text-white tracking-tight">
+                    Resume
+                </h1>
+                {label && (
+                    <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">{label}</p>
+                )}
             </div>
 
             {/* ── Controls ── */}
             <div className="w-full max-w-4xl mx-auto px-4 flex items-center justify-between mb-4">
                 <Link
                     href="/"
-                    className="flex items-center justify-center w-9 h-9 rounded-lg border border-white/15 text-white hover:bg-white/10 transition-colors"
+                    className="flex items-center justify-center w-9 h-9 rounded-lg border border-black/15 dark:border-white/15 text-black dark:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
                 >
                     <ArrowLeftIcon className="w-4 h-4" />
                 </Link>
@@ -63,7 +66,7 @@ export default function ResumeViewer({ fileUrl, downloadUrl, label, updatedAt, s
                             href={downloadUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center justify-center w-9 h-9 rounded-lg border border-white/15 text-white hover:bg-white/10 transition-colors"
+                            className="flex items-center justify-center w-9 h-9 rounded-lg border border-black/15 dark:border-white/15 text-black dark:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
                             title="Open in Drive"
                         >
                             <DownloadIcon className="w-4 h-4" />
@@ -71,7 +74,7 @@ export default function ResumeViewer({ fileUrl, downloadUrl, label, updatedAt, s
                     )}
                     <button
                         onClick={toggleFullscreen}
-                        className="flex items-center justify-center w-9 h-9 rounded-lg border border-white/15 text-white hover:bg-white/10 transition-colors"
+                        className="flex items-center justify-center w-9 h-9 rounded-lg border border-black/15 dark:border-white/15 text-black dark:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
                         title={isFullscreen ? "Exit fullscreen" : "Fullscreen"}
                     >
                         <EnterFullScreenIcon className="w-4 h-4" />
@@ -83,17 +86,19 @@ export default function ResumeViewer({ fileUrl, downloadUrl, label, updatedAt, s
             <div className="w-full max-w-4xl mx-auto px-4 flex-1 flex flex-col">
                 <div
                     id="resume-iframe-container"
-                    className="rounded-xl overflow-hidden border border-white/10 shadow-2xl flex flex-col"
+                    className="rounded-xl overflow-hidden border border-black/10 dark:border-white/10 shadow-lg dark:shadow-2xl flex flex-col"
                     style={{ minHeight: "80vh" }}
                 >
                     {/* macOS title bar */}
-                    <div className="flex items-center justify-between bg-[#1e1e1e] px-4 py-2.5 border-b border-white/10 shrink-0">
+                    <div className="flex items-center justify-between bg-gray-100 dark:bg-[#1e1e1e] px-4 py-2.5 border-b border-black/10 dark:border-white/10 shrink-0">
                         <div className="flex items-center gap-1.5">
                             <span className="w-3 h-3 rounded-full bg-[#FF5F57]" />
                             <span className="w-3 h-3 rounded-full bg-[#FEBC2E]" />
                             <span className="w-3 h-3 rounded-full bg-[#28C840]" />
                         </div>
-                        <span className="text-xs text-gray-400 font-medium">{filename}</span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                            {filename}
+                        </span>
                         <div className="w-14" />
                     </div>
 
@@ -106,10 +111,10 @@ export default function ResumeViewer({ fileUrl, downloadUrl, label, updatedAt, s
                             allow="fullscreen"
                         />
                     ) : (
-                        <div className="flex-1 flex flex-col items-center justify-center bg-[#1a1a1a] text-gray-500 gap-3 py-20">
+                        <div className="flex-1 flex flex-col items-center justify-center bg-gray-50 dark:bg-[#1a1a1a] text-gray-400 gap-3 py-20">
                             <DownloadIcon className="w-10 h-10 opacity-30" />
                             <p className="text-sm">No resume uploaded yet.</p>
-                            <p className="text-xs text-gray-600">
+                            <p className="text-xs text-gray-400 dark:text-gray-600">
                                 Add one from the{" "}
                                 <Link href="/admin/resume" className="text-blue-500 hover:underline">
                                     admin panel
@@ -124,16 +129,10 @@ export default function ResumeViewer({ fileUrl, downloadUrl, label, updatedAt, s
             {/* ── Footer ── */}
             <div className="w-full max-w-4xl mx-auto px-4 py-6 text-center">
                 {updatedAt && (
-                    <p className="text-xs text-gray-600">
+                    <p className="text-xs text-gray-400 dark:text-gray-600">
                         Last updated: {formatDate(updatedAt)}
                     </p>
                 )}
-                <p className="text-xs text-gray-600 mt-1">
-                    For the latest version, please visit{" "}
-                    <Link href="/resume" className="text-blue-500 hover:underline">
-                        {siteHost}/resume
-                    </Link>
-                </p>
             </div>
         </div>
     );
