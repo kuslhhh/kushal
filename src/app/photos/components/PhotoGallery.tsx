@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { Cross2Icon, ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
+import { Cross2Icon, ChevronLeftIcon, ChevronRightIcon, HeartIcon, HeartFilledIcon } from "@radix-ui/react-icons";
+import axios from "axios";
 
 interface Photo {
     id: string;
@@ -11,10 +12,170 @@ interface Photo {
     title: string | null;
     width: number;
     height: number;
+    likes: number;
 }
 
 interface Props {
     photos: Photo[];
+}
+
+const LIKED_KEY = "liked_photos"; // localStorage key
+
+function getLikedSet(): Set<string> {
+    if (typeof window === "undefined") return new Set();
+    try {
+        return new Set(JSON.parse(localStorage.getItem(LIKED_KEY) ?? "[]"));
+    } catch {
+        return new Set();
+    }
+}
+
+function saveLikedSet(set: Set<string>) {
+    localStorage.setItem(LIKED_KEY, JSON.stringify([...set]));
+}
+
+// Per-photo like state managed independently
+function usePhotoLike(photoId: string, initialLikes: number) {
+    const [likes, setLikes] = useState(initialLikes);
+    const [liked, setLiked] = useState(false);
+    const [isAnimating, setIsAnimating] = useState(false);
+
+    useEffect(() => {
+        setLiked(getLikedSet().has(photoId));
+    }, [photoId]);
+
+    const toggleLike = useCallback(async () => {
+        const likedSet = getLikedSet();
+
+        if (liked) {
+            // Unlike — optimistic
+            likedSet.delete(photoId);
+            saveLikedSet(likedSet);
+            setLiked(false);
+            setLikes((l) => Math.max(0, l - 1));
+            return;
+        }
+
+        // Like — optimistic
+        likedSet.add(photoId);
+        saveLikedSet(likedSet);
+        setLiked(true);
+        setLikes((l) => l + 1);
+        setIsAnimating(true);
+        setTimeout(() => setIsAnimating(false), 600);
+
+        try {
+            const res = await axios.post(`/api/photos/like/${photoId}`);
+            if (res.data.success) {
+                setLikes(res.data.likes);
+            }
+        } catch {
+            // Server rejected (rate limit etc.) — revert
+            likedSet.delete(photoId);
+            saveLikedSet(likedSet);
+            setLiked(false);
+            setLikes((l) => Math.max(0, l - 1));
+        }
+    }, [liked, photoId]);
+
+    return { likes, liked, isAnimating, toggleLike };
+}
+
+// Individual card with its own like state
+function PhotoCard({
+    photo,
+    index,
+    onOpen,
+}: {
+    photo: Photo;
+    index: number;
+    onOpen: (i: number) => void;
+}) {
+    const { likes, liked, isAnimating, toggleLike } = usePhotoLike(photo.id, photo.likes);
+    const lastTap = useRef(0);
+    const [heartBurst, setHeartBurst] = useState(false);
+
+    const handleDoubleClick = () => {
+        if (!liked) {
+            toggleLike();
+        }
+        setHeartBurst(true);
+        setTimeout(() => setHeartBurst(false), 800);
+    };
+
+    // Mobile double-tap
+    const handleTouchEnd = () => {
+        const now = Date.now();
+        if (now - lastTap.current < 300) {
+            handleDoubleClick();
+        }
+        lastTap.current = now;
+    };
+
+    return (
+        <div
+            className="break-inside-avoid group relative overflow-hidden rounded-2xl mb-4 cursor-pointer select-none"
+            onDoubleClick={handleDoubleClick}
+            onTouchEnd={handleTouchEnd}
+            onClick={() => onOpen(index)}
+        >
+            <Image
+                src={photo.url}
+                alt={photo.title ?? "Photo"}
+                width={photo.width}
+                height={photo.height}
+                className="w-full h-auto block transition-transform duration-500 group-hover:scale-[1.02]"
+                sizes="320px"
+                placeholder="blur"
+                blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+            />
+
+            {/* Bottom bar: title + like */}
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent px-3 pt-8 pb-3 flex items-end justify-between gap-2">
+                {photo.title && (
+                    <p className="text-white text-sm font-medium line-clamp-1 flex-1">
+                        {photo.title}
+                    </p>
+                )}
+                {/* Like button — stop propagation so it doesn't open lightbox */}
+                <button
+                    onClick={(e) => { e.stopPropagation(); toggleLike(); }}
+                    className="flex items-center gap-1 shrink-0 group/like"
+                    aria-label={liked ? "Unlike" : "Like"}
+                >
+                    <motion.div
+                        animate={isAnimating ? { scale: [1, 1.5, 1] } : {}}
+                        transition={{ duration: 0.3 }}
+                    >
+                        {liked ? (
+                            <HeartFilledIcon className="w-4 h-4 text-red-500" />
+                        ) : (
+                            <HeartIcon className="w-4 h-4 text-white/80 group-hover/like:text-white" />
+                        )}
+                    </motion.div>
+                    {likes > 0 && (
+                        <span className="text-white/80 text-xs font-medium">{likes}</span>
+                    )}
+                </button>
+            </div>
+
+            {/* Double-click heart burst */}
+            <AnimatePresence>
+                {heartBurst && (
+                    <motion.div
+                        key="burst"
+                        initial={{ opacity: 1, scale: 0.5 }}
+                        animate={{ opacity: 0, scale: 2 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.6, ease: "easeOut" }}
+                        className="absolute inset-0 flex items-center justify-center pointer-events-none"
+                    >
+                        <HeartFilledIcon className="w-16 h-16 text-white drop-shadow-lg" />
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </div>
+    );
 }
 
 export default function PhotoGallery({ photos }: Props) {
@@ -51,37 +212,10 @@ export default function PhotoGallery({ photos }: Props) {
 
     return (
         <>
-            {/* ── Pinterest-style masonry ──
-                column-width tells the browser "each column should be ~320px wide".
-                It fits as many as possible, so on wide screens you get 3-4 columns,
-                on mobile you get 2. Every photo renders at its true aspect ratio. */}
-            <div
-                style={{ columnWidth: "320px", columnGap: "16px" }}
-            >
+            {/* ── Masonry grid ── */}
+            <div style={{ columnWidth: "320px", columnGap: "16px" }}>
                 {photos.map((photo, i) => (
-                    <div
-                        key={photo.id}
-                        className="break-inside-avoid cursor-zoom-in group relative overflow-hidden rounded-2xl mb-4"
-                        onClick={() => open(i)}
-                    >
-                        <Image
-                            src={photo.url}
-                            alt={photo.title ?? "Photo"}
-                            width={photo.width}
-                            height={photo.height}
-                            className="w-full h-auto block transition-transform duration-500 group-hover:scale-[1.02]"
-                            sizes="320px"
-                            placeholder="blur"
-                            blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
-                        />
-                        {photo.title && (
-                            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent px-3 pt-8 pb-3">
-                                <p className="text-white text-sm font-medium line-clamp-2">
-                                    {photo.title}
-                                </p>
-                            </div>
-                        )}
-                    </div>
+                    <PhotoCard key={photo.id} photo={photo} index={i} onOpen={open} />
                 ))}
             </div>
 
@@ -100,7 +234,6 @@ export default function PhotoGallery({ photos }: Props) {
                         <button
                             className="absolute top-5 right-5 text-white/70 hover:text-white transition-colors z-10"
                             onClick={close}
-                            aria-label="Close"
                         >
                             <Cross2Icon className="w-6 h-6" />
                         </button>
@@ -112,7 +245,6 @@ export default function PhotoGallery({ photos }: Props) {
                         <button
                             className="absolute left-4 text-white/60 hover:text-white transition-colors z-10 p-2"
                             onClick={(e) => { e.stopPropagation(); prev(); }}
-                            aria-label="Previous"
                         >
                             <ChevronLeftIcon className="w-8 h-8" />
                         </button>
@@ -136,16 +268,13 @@ export default function PhotoGallery({ photos }: Props) {
                                 priority
                             />
                             {current.title && (
-                                <p className="text-white/60 text-sm text-center">
-                                    {current.title}
-                                </p>
+                                <p className="text-white/60 text-sm text-center">{current.title}</p>
                             )}
                         </motion.div>
 
                         <button
                             className="absolute right-4 text-white/60 hover:text-white transition-colors z-10 p-2"
                             onClick={(e) => { e.stopPropagation(); next(); }}
-                            aria-label="Next"
                         >
                             <ChevronRightIcon className="w-8 h-8" />
                         </button>

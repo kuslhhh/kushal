@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 export default async function PhotosPage() {
     const photos = await prisma.photo.findMany({
         orderBy: { createdAt: "desc" },
-        select: { id: true, url: true, title: true, width: true, height: true },
+        select: { id: true, url: true, title: true, width: true, height: true, likes: true },
     });
 
     return (

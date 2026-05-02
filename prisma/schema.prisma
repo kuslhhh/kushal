@@ -41,5 +41,6 @@ model Photo {
   url       String
   width     Int
   height    Int
+  likes     Int      @default(0)
   createdAt DateTime @default(now())
 }
