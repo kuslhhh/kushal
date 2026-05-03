@@ -36,12 +36,12 @@ export async function POST(
     // Clean up when the map exceeds a safe threshold.
     if (recentLikes.size > MAX_MAP_SIZE) {
         const cutoff = now - 60_000;
-        for (const [k, t] of recentLikes) {
+        recentLikes.forEach((t, k) => {
             if (t < cutoff) recentLikes.delete(k);
-        }
+        });
         // If still too large after pruning (active abuse), drop oldest half
         if (recentLikes.size > MAX_MAP_SIZE) {
-            const entries = [...recentLikes.entries()].sort((a, b) => a[1] - b[1]);
+            const entries = Array.from(recentLikes.entries()).sort((a, b) => a[1] - b[1]);
             const toRemove = Math.floor(entries.length / 2);
             for (let i = 0; i < toRemove; i++) {
                 recentLikes.delete(entries[i][0]);
