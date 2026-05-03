@@ -30,7 +30,7 @@ export async function DELETE(
 
         return NextResponse.json({ success: true, message: "Photo deleted" });
     } catch (error) {
-        const message = error instanceof Error ? error.message : JSON.stringify(error);
-        return NextResponse.json({ success: false, message: `Server error: ${message}` }, { status: 500 });
+        console.error("Photo delete error:", error);
+        return NextResponse.json({ success: false, message: "An unexpected server error occurred." }, { status: 500 });
     }
 }

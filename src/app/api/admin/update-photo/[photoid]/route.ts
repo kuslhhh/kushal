@@ -22,7 +22,7 @@ export async function PATCH(
 
         return NextResponse.json({ success: true, photo });
     } catch (error) {
-        const message = error instanceof Error ? error.message : JSON.stringify(error);
-        return NextResponse.json({ success: false, message }, { status: 500 });
+        console.error("Photo update error:", error);
+        return NextResponse.json({ success: false, message: "An unexpected server error occurred." }, { status: 500 });
     }
 }

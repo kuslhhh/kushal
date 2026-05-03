@@ -12,7 +12,7 @@ export async function GET() {
 
   if (!response.ok) {
     return new Response(
-      JSON.stringify({ error: "GitHub contributions API failed", details: json }),
+      JSON.stringify({ error: "Failed to fetch GitHub contributions" }),
       { status: 500 }
     );
   }

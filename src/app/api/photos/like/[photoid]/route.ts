@@ -1,17 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-// Simple rate-limit: one like per IP per photo per hour using a Map in memory.
-// Good enough for a personal portfolio — no Redis needed.
+// Simple rate-limit: one like per IP per photo per 60 seconds using a Map in memory.
+// NOTE: In serverless environments (Vercel), this only protects within a single
+// instance. For stronger guarantees, migrate to a distributed store like Upstash Redis.
 const recentLikes = new Map<string, number>();
+const MAX_MAP_SIZE = 5000;
 
 export async function POST(
     req: NextRequest,
     { params }: { params: { photoid: string } }
 ) {
+    // Use x-real-ip first (more reliable, set by reverse proxy),
+    // fall back to x-forwarded-for. Reject completely unknown IPs.
     const ip =
-        req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
-        req.headers.get("x-real-ip") ??
+        req.headers.get("x-real-ip")?.trim() ||
+        req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
         "unknown";
 
     const key = `${ip}:${params.photoid}`;
@@ -28,12 +32,21 @@ export async function POST(
 
     recentLikes.set(key, now);
 
-    // Clean up old entries every 1000 requests to avoid memory leak
-    if (recentLikes.size > 1000) {
+    // Proactively prune expired entries to prevent unbounded memory growth.
+    // Clean up when the map exceeds a safe threshold.
+    if (recentLikes.size > MAX_MAP_SIZE) {
         const cutoff = now - 60_000;
-        recentLikes.forEach((t, k) => {
+        for (const [k, t] of recentLikes) {
             if (t < cutoff) recentLikes.delete(k);
-        });
+        }
+        // If still too large after pruning (active abuse), drop oldest half
+        if (recentLikes.size > MAX_MAP_SIZE) {
+            const entries = [...recentLikes.entries()].sort((a, b) => a[1] - b[1]);
+            const toRemove = Math.floor(entries.length / 2);
+            for (let i = 0; i < toRemove; i++) {
+                recentLikes.delete(entries[i][0]);
+            }
+        }
     }
 
     try {

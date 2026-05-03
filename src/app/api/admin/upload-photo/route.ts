@@ -18,6 +18,9 @@ interface CloudinaryUploadResult {
     [key: string]: unknown;
 }
 
+const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
+
 export async function POST(req: NextRequest) {
     const session = await getServerSession(authOptions);
     if (!session || session.user?.email !== process.env.ADMIN_EMAIL) {
@@ -31,6 +34,16 @@ export async function POST(req: NextRequest) {
 
         if (!file) {
             return NextResponse.json({ success: false, message: "No file provided" }, { status: 400 });
+        }
+
+        // Validate file type
+        if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+            return NextResponse.json({ success: false, message: "Invalid file type. Only JPEG, PNG, WebP, and GIF are allowed." }, { status: 400 });
+        }
+
+        // Validate file size
+        if (file.size > MAX_FILE_SIZE) {
+            return NextResponse.json({ success: false, message: "File is too large. Maximum size is 10 MB." }, { status: 400 });
         }
 
         const bytes = await file.arrayBuffer();
@@ -65,8 +78,7 @@ export async function POST(req: NextRequest) {
 
         return NextResponse.json({ success: true, message: "Photo uploaded", photo });
     } catch (error) {
-        const message = error instanceof Error ? error.message : JSON.stringify(error);
         console.error("Photo upload error:", error);
-        return NextResponse.json({ success: false, message: `Server error: ${message}` }, { status: 500 });
+        return NextResponse.json({ success: false, message: "An unexpected server error occurred." }, { status: 500 });
     }
 }

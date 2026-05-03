@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
 
         return NextResponse.json({ success: true, message: "Resume saved and set as active" });
     } catch (error) {
-        const message = error instanceof Error ? error.message : JSON.stringify(error);
-        return NextResponse.json({ success: false, message: `Server error: ${message}` }, { status: 500 });
+        console.error("Resume upload error:", error);
+        return NextResponse.json({ success: false, message: "An unexpected server error occurred." }, { status: 500 });
     }
 }

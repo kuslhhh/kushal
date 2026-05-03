@@ -47,8 +47,9 @@ export async function DELETE(
             { status: 200 }
         );
     } catch (error) {
+        console.error("Blog delete error:", error);
         return NextResponse.json(
-            { success: false, message: `Server error: ${error}` },
+            { success: false, message: "An unexpected server error occurred." },
             { status: 500 }
         );
     }

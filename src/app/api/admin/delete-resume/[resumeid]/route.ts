@@ -31,7 +31,7 @@ export async function DELETE(
 
         return NextResponse.json({ success: true, message: "Resume deleted" });
     } catch (error) {
-        const message = error instanceof Error ? error.message : JSON.stringify(error);
-        return NextResponse.json({ success: false, message: `Server error: ${message}` }, { status: 500 });
+        console.error("Resume delete error:", error);
+        return NextResponse.json({ success: false, message: "An unexpected server error occurred." }, { status: 500 });
     }
 }

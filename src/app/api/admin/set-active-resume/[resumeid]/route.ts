@@ -30,8 +30,9 @@ export async function PATCH(
             { status: 200 }
         );
     } catch (error) {
+        console.error("Set active resume error:", error);
         return NextResponse.json(
-            { success: false, message: `Server error: ${error}` },
+            { success: false, message: "An unexpected server error occurred." },
             { status: 500 }
         );
     }

@@ -37,8 +37,9 @@ export async function POST(req: NextRequest) {
       { status: 200 }
     );
   } catch (error) {
+    console.error("Send email error:", error);
     return NextResponse.json(
-      { success: false, message: `Server error occurred : ${error}` },
+      { success: false, message: "An unexpected server error occurred." },
       { status: 500 }
     );
   }
